@@ -1,33 +1,22 @@
 import streamlit as st
-from langchain.document_loaders import UnstructuredWordDocumentLoader
-import tempfile
+import langchain
 
-def load_word_document(doc_file):
-    # Create a temporary file to save the uploaded document
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
-        tmp_file.write(doc_file.getbuffer())
-        tmp_filename = tmp_file.name
-    
-    # Load the document using UnstructuredWordDocumentLoader
-    loader = UnstructuredWordDocumentLoader(tmp_filename)
-    document = loader.load()
-    
-    # Concatenate all the text from the document
-    full_text = "\n".join([element.text for element in document if element.text])
-    
-    return full_text
+# Create a title for the app
+st.title("Word Document Parser")
 
-def main():
-    st.title("Word Document Loader")
-    
-    # File uploader allows the user to upload a Word document
-    doc_file = st.file_uploader("Upload a Word document", type=["docx"])
-    
-    if doc_file is not None:
-        # Load and display the document
-        document_text = load_word_document(doc_file)
-        st.write("Document Content:")
-        st.text_area("Content", value=document_text, height=300)
+# Add a file uploader widget
+uploaded_file = st.file_uploader("Upload a Word document")
 
-if __name__ == "__main__":
-    main()
+# Use LangChain to parse the document
+if uploaded_file is not None:
+    document = langchain.Document.from_file(uploaded_file)
+    text = document.text
+    sentences = text.split(".")
+
+    # Print the sentences
+    for sentence in sentences:
+        st.write(sentence)
+
+# If no file is uploaded, print a message
+else:
+    st.write("Please upload a Word document")
