@@ -61,7 +61,7 @@ def generate_test_cases():
    # Initialize the question-answering chain
    chain = load_qa_chain(OpenAI(openai_api_key=openai_api_key, temperature=0), chain_type="stuff")
    # Generate test cases
-   query = f"Summarize the business process.\n"
+   query = f"Summarize the business process.  List the activities that make up the process.\n"
    bp_summary = chain.run(input_documents=db.similarity_search(query), question=query)
    st.header("Business Process Summary")
    st.write(bp_summary)
