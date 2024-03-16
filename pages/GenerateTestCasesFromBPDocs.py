@@ -18,14 +18,14 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     # Initialize test_cases at the beginning of the function
     test_cases = ""
     
-    llm = openai(api_key=openai_api_key)
+    llm = openai(openai_api_key)
     combined_documents = f"Business Process Document:\n{business_process_doc}\n\n"
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     prompt = f"Generate test cases using the following documents:\n\n{combined_documents}"
     
     st.write(combined_documents)
-    response =llm(prompt)
+    response = llm(prompt)
     st.write(response)
  #   test_cases = llm(prompt)
     # Assuming you are using the chat API
