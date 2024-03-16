@@ -1,6 +1,6 @@
 import streamlit as st
-from langchain.llms.openai import OpenAI
-from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+
 
 from utils import read_pdf, read_docx, read_txt
 
