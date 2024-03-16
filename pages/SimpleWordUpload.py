@@ -50,11 +50,13 @@ def generate_test_cases():
    business_docs = UnstructuredFileLoader(["business_process_docs/" + f for f in os.listdir("business_process_docs")]).load()
    user_docs = UnstructuredFileLoader(["user_documentation/" + f for f in os.listdir("user_documentation")]).load()
    docs = business_docs + user_docs
+   st.write(business_docs)
    # Split the documents into chunks
-   text_splitter = CharacterTextSplitter(chunk_size=4096, chunk_overlap=0)
+   #text_splitter = CharacterTextSplitter(chunk_size=4096, chunk_overlap=0)
+   text_splitter = CharacterTextSplitter()
    texts = text_splitter.split_documents(docs)
-   st.header("DOCS")
-   st.write(texts)
+   #st.header("DOCS")
+   #st.write(texts)
    # Create embeddings and vector store
    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
    db = FAISS.from_documents(texts, embeddings)
