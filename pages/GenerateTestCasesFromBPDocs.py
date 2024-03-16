@@ -18,7 +18,7 @@ def upload_document(label, file_types):
 
 #def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
    
-   def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
+def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
     # Initialize LangChain with OpenAI's GPT-3.5-turbo as the backend
     llm = LangChainLlm(api_key=openai_api_key, model="gpt-3.5-turbo")
     
