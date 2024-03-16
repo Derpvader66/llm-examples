@@ -11,6 +11,9 @@ st.set_page_config(page_title="Test Case Generator", page_icon=":memo:")
 # App title and description
 st.title("Test Case Generator")
 st.markdown("Upload your business process documents and user documentation files to generate test cases.")
+# Sidebar
+st.sidebar.header("OpenAI API Key")
+openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
 # Create file uploader widgets
 uploaded_business_files = st.file_uploader("Choose business process documents", accept_multiple_files=True)
 uploaded_user_files = st.file_uploader("Choose user documentation files", accept_multiple_files=True)
@@ -33,10 +36,10 @@ def generate_test_cases():
    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
    texts = text_splitter.split_documents(docs)
    # Create embeddings and vector store
-   embeddings = OpenAIEmbeddings()
+   embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
    db = FAISS.from_documents(texts, embeddings)
    # Initialize the question-answering chain
-   chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
+   chain = load_qa_chain(OpenAI(openai_api_key=openai_api_key, temperature=0), chain_type="stuff")
    # Generate test cases
    query = "Generate detailed test cases based on the provided business process and user documentation."
    test_cases = chain.run(input_documents=db.similarity_search(query), question=query)
@@ -47,4 +50,7 @@ process_files(uploaded_business_files, "business_process_docs")
 process_files(uploaded_user_files, "user_documentation")
 # Generate test cases button
 if st.button("Generate Test Cases"):
-   generate_test_cases()
+   if openai_api_key:
+       generate_test_cases()
+   else:
+       st.warning("Please provide your OpenAI API Key in the sidebar.")
