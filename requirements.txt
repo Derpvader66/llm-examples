@@ -7,3 +7,4 @@ pillow
 tiktoken
 numpy
 unstructured
+python-docx
