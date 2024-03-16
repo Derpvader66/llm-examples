@@ -26,7 +26,7 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     
-    prompt_template = PromptTemplate(input_variables=combined_documents,template="Generate test cases using the following documents:\n\n{input_variables}")
+    prompt_template = PromptTemplate(combined_documents,template="Generate test cases using the following documents:\n\n{combined_documents}")
     response = llm(prompt_template)
     st.write(response)
     # Create a chain to generate the response using GPT-3.5-turbo
