@@ -25,9 +25,10 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     
-    prompt = f"Based on the following business process and detailed steps, generate comprehensive test cases:\n\n{combined_documents}"
+    prompt = f"Based on the following business process and detailed steps, generate comprehensive set of manual test cases:\n\n{combined_documents}"
+    response = llm(prompt)
 
-    generate_test_cases = llm(prompt)
+    return response
  
 def main():
    st.title("Test Case Generator for Business Processes")
