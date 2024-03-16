@@ -19,6 +19,10 @@ openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="passwo
 example_test_case = """
 Test Case ID: TC001
 Description: Verify user login functionality
+Prerequisites:
+
+Do some Stuff before you do other stuff
+
 Steps:
 1. Open the application
 2. Enter valid username and password
@@ -47,8 +51,10 @@ def generate_test_cases():
    user_docs = UnstructuredFileLoader(["user_documentation/" + f for f in os.listdir("user_documentation")]).load()
    docs = business_docs + user_docs
    # Split the documents into chunks
-   text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+   text_splitter = CharacterTextSplitter(chunk_size=4096, chunk_overlap=0)
    texts = text_splitter.split_documents(docs)
+   st.header("DOCS")
+   st.write(texts)
    # Create embeddings and vector store
    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
    db = FAISS.from_documents(texts, embeddings)
