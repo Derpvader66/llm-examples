@@ -10,11 +10,11 @@ def load_documents(files):
    loaders = []
    for file in files:
        if file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-           loader = UnstructuredWordDocumentLoader(file)
+           loader = UnstructuredWordDocumentLoader(file.name)
        elif file.type == "application/pdf":
-           loader = UnstructuredPDFLoader(file)
+           loader = UnstructuredPDFLoader(file.name)
        elif file.type == "application/vnd.ms-excel" or file.type == "text/csv":
-           loader = CSVLoader(file)
+           loader = CSVLoader(file.name)
        else:
            raise ValueError(f"Unsupported file type: {file.type}")
        loaders.append(loader)
