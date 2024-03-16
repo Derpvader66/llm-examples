@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+from langchain.llms import openai
 from utils import read_pdf, read_docx, read_txt
 
 def upload_document(label, file_types):
@@ -18,14 +18,16 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     # Initialize test_cases at the beginning of the function
     test_cases = ""
     
-    client = OpenAI(api_key=openai_api_key)
+    llm = openai(api_key=openai_api_key)
     combined_documents = f"Business Process Document:\n{business_process_doc}\n\n"
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     prompt = f"Generate test cases using the following documents:\n\n{combined_documents}"
     
     st.write(combined_documents)
-    test_cases = client(prompt)
+    response =llm(prompt)
+    st.write(response)
+ #   test_cases = llm(prompt)
     # Assuming you are using the chat API
 #    messages = [{"role": "system", "content": prompt}]
 
