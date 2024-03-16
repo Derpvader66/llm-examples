@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import shutil
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -14,15 +15,28 @@ st.markdown("Upload your business process documents and user documentation files
 # Sidebar
 st.sidebar.header("OpenAI API Key")
 openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
+# Example test case format
+example_test_case = """
+Test Case ID: TC001
+Description: Verify user login functionality
+Steps:
+1. Open the application
+2. Enter valid username and password
+3. Click on the login button
+Expected Result: User should be successfully logged in and redirected to the home page.
+"""
+st.header("Example Test Case Format")
+st.write(example_test_case)
 # Create file uploader widgets
 uploaded_business_files = st.file_uploader("Choose business process documents", accept_multiple_files=True)
 uploaded_user_files = st.file_uploader("Choose user documentation files", accept_multiple_files=True)
 # Process uploaded files
 def process_files(uploaded_files, directory):
    if uploaded_files:
+       if os.path.exists(directory):
+           shutil.rmtree(directory)
+       os.makedirs(directory)
        for uploaded_file in uploaded_files:
-           if not os.path.exists(directory):
-               os.makedirs(directory)
            with open(os.path.join(directory, uploaded_file.name), "wb") as f:
                f.write(uploaded_file.getbuffer())
        st.success(f"{len(uploaded_files)} file(s) uploaded successfully to {directory}!")
@@ -41,10 +55,13 @@ def generate_test_cases():
    # Initialize the question-answering chain
    chain = load_qa_chain(OpenAI(openai_api_key=openai_api_key, temperature=0), chain_type="stuff")
    # Generate test cases
-   query = "Generate detailed test cases based on the provided business process and user documentation."
+   query = f"Generate detailed test cases based on the provided business process and user documentation. Follow the format:\n{example_test_case}"
    test_cases = chain.run(input_documents=db.similarity_search(query), question=query)
    st.header("Generated Test Cases")
    st.write(test_cases)
+   # Remove uploaded files
+   shutil.rmtree("business_process_docs")
+   shutil.rmtree("user_documentation")
 # Process uploaded files
 process_files(uploaded_business_files, "business_process_docs")
 process_files(uploaded_user_files, "user_documentation")
