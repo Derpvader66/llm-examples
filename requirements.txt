@@ -8,3 +8,4 @@ tiktoken
 numpy
 unstructured
 python-docx
+langchain-community
