@@ -1,8 +1,7 @@
 import streamlit as st
 from openai import OpenAI
-
-
 from utils import read_pdf, read_docx, read_txt
+
 def upload_document(label, file_types):
    uploaded_file = st.file_uploader(label, type=file_types)
    if uploaded_file is not None:
@@ -26,17 +25,19 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     prompt = f"Generate test cases using the following documents:\n\n{combined_documents}"
     
     st.write(combined_documents)
+    test_cases = client(prompt)
     # Assuming you are using the chat API
-    messages = [{"role": "system", "content": prompt}]
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages, max_tokens=1024, stop=None, temperature=0.7)
+#    messages = [{"role": "system", "content": prompt}]
+
+#    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages, max_tokens=1024, stop=None, temperature=0.7)
     
-    if response.choices and isinstance(response.choices[0].message, list):
-        messages = response.choices[0].message
-        for msg in messages:
-            if isinstance(msg, dict) and 'role' in msg and 'content' in msg and msg['role'] == 'assistant':
-                test_cases += msg['content'].strip() + "\n"
-    else:
-        st.write("Still broke")
+#    if response.choices and isinstance(response.choices[0].message, list):
+#        messages = response.choices[0].message
+#        for msg in messages:
+#            if isinstance(msg, dict) and 'role' in msg and 'content' in msg and msg['role'] == 'assistant':
+#                test_cases += msg['content'].strip() + "\n"
+#    else:
+#        st.write("Still broke")
 
         
     return test_cases
