@@ -6,16 +6,11 @@ Starter examples for building LLM apps with Streamlit.
 
 ## Overview of the App
 
-This app showcases a growing collection of LLM minimum working examples.
+This app showcases a growing collection of LLM minimum working examples for Software QUality Engineering.
 
 Current examples include:
 
-- Chatbot
-- File Q&A
-- Chat with Internet search
-- LangChain Quickstart
-- LangChain PromptTemplate
-- Chat with user feedback
+- Generate Test Cases
 
 ## Demo App
 
@@ -46,5 +41,5 @@ OPENAI_API_KEY='xxxxxxxxxx'
 virtualenv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run Chatbot.py
+streamlit run TestCaseGenerator.py
 ```
