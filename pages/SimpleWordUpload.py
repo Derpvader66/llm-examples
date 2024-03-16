@@ -61,10 +61,16 @@ def generate_test_cases():
    # Initialize the question-answering chain
    chain = load_qa_chain(OpenAI(openai_api_key=openai_api_key, temperature=0), chain_type="stuff")
    # Generate test cases
+   query = f"Summarize the business process.\n"
+   bp_summary = chain.run(input_documents=db.similarity_search(query), question=query)
+   st.header("Business Process Summary")
+   st.write(bp_summary)
+
    query = f"Generate detailed test cases based on the provided business process and user documentation. DO NOT INCLUDE THE EXAMPLE FORMAT IN THE OUTPUT Follow the format:\n{example_test_case}"
    test_cases = chain.run(input_documents=db.similarity_search(query), question=query)
    st.header("Generated Test Cases")
    st.write(test_cases)
+
    # Remove uploaded files
    shutil.rmtree("business_process_docs")
    shutil.rmtree("user_documentation")
