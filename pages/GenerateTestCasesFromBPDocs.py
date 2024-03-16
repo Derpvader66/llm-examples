@@ -1,6 +1,6 @@
 import streamlit as st
-from langchain.llms import LangChainLlm
-from langchain.chains import SinglePromptChain
+from langchain.llms.openai import OpenAI
+from langchain.prompts import PromptTemplate
 
 from utils import read_pdf, read_docx, read_txt
 
@@ -20,20 +20,22 @@ def upload_document(label, file_types):
    
 def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
     # Initialize LangChain with OpenAI's GPT-3.5-turbo as the backend
-    llm = LangChainLlm(api_key=openai_api_key, model="gpt-3.5-turbo")
+    llm = OpenAI(api_key=openai_api_key, model="gpt-3.5-turbo")
     
     combined_documents = f"Business Process Document:\n{business_process_doc}\n\n"
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
-    prompt = f"Generate test cases using the following documents:\n\n{combined_documents}"
     
+    prompt_template = PromptTemplate(input_variables=combined_documents,template="Generate test cases using the following documents:\n\n{input_variables}")
+    response = llm(prompt_template)
+    st.write(response)
     # Create a chain to generate the response using GPT-3.5-turbo
-    chain = SinglePromptChain(llm=llm, prompt=prompt, max_tokens=1024, temperature=0.7)
+    # chain = SinglePromptChain(llm=llm, prompt=prompt, max_tokens=1024, temperature=0.7)
     
     # Generate the test cases
-    test_cases = chain.run()
+    #test_cases = chain.run()
     
-    return test_cases.strip()
+    #return test_cases.strip()
  
 def main():
    st.title("Test Case Generator for Business Processes")
