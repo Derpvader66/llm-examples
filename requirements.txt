@@ -8,3 +8,5 @@ pillow==9.5.0
 tiktoken==0.4.0
 numpy==1.24.3
 unstructured
+os
+tempfile
