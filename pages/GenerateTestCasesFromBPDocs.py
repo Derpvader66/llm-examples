@@ -1,5 +1,7 @@
 import streamlit as st
-from langchain.llms import openai
+from langchain.llms import LangChainLlm
+from langchain.chains import SinglePromptChain
+
 from utils import read_pdf, read_docx, read_txt
 
 def upload_document(label, file_types):
@@ -14,36 +16,25 @@ def upload_document(label, file_types):
        return content
    return None
 
-def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
-    # Initialize test_cases at the beginning of the function
-    test_cases = ""
+#def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
+   
+   def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
+    # Initialize LangChain with OpenAI's GPT-3.5-turbo as the backend
+    llm = LangChainLlm(api_key=openai_api_key, model="gpt-3.5-turbo")
     
-    llm = openai(openai_api_key)
     combined_documents = f"Business Process Document:\n{business_process_doc}\n\n"
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     prompt = f"Generate test cases using the following documents:\n\n{combined_documents}"
     
-    st.write(combined_documents)
-    response = llm(prompt)
-    st.write(response)
- #   test_cases = llm(prompt)
-    # Assuming you are using the chat API
-#    messages = [{"role": "system", "content": prompt}]
-
-#    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages, max_tokens=1024, stop=None, temperature=0.7)
+    # Create a chain to generate the response using GPT-3.5-turbo
+    chain = SinglePromptChain(llm=llm, prompt=prompt, max_tokens=1024, temperature=0.7)
     
-#    if response.choices and isinstance(response.choices[0].message, list):
-#        messages = response.choices[0].message
-#        for msg in messages:
-#            if isinstance(msg, dict) and 'role' in msg and 'content' in msg and msg['role'] == 'assistant':
-#                test_cases += msg['content'].strip() + "\n"
-#    else:
-#        st.write("Still broke")
-
-        
-    return test_cases
-
+    # Generate the test cases
+    test_cases = chain.run()
+    
+    return test_cases.strip()
+ 
 def main():
    st.title("Test Case Generator for Business Processes")
    with st.sidebar:
