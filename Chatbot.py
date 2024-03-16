@@ -1,57 +1,50 @@
-import streamlit as st
-from langchain.llms.openai import OpenAI
-from langchain.chains import  SimpleSequentialChain
-from langchain.prompts import PromptTemplate
+from langchain import OpenAI, PromptTemplate
+#from langchain.chains import LLMChain, SimpleSequentialChain
+from langchain.chains import LLMChain,SimpleSequentialChain
 
-from utils import read_pdf, read_docx, read_txt
+# This is an LLMChain to write a synopsis given a title of a play.
+playwright_llm = OpenAI(temperature=.9, openai_api_key = "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")
 
-def upload_document(label, file_types):
-    uploaded_file = st.file_uploader(label, type=file_types)
-    if uploaded_file is not None:
-        if uploaded_file.type == "application/pdf":
-            content = read_pdf(uploaded_file)
-        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            content = read_docx(uploaded_file)
-        else:  # Assuming text file
-            content = read_txt(uploaded_file)
-        return content
-    return None
+playwright_template = """
 
-def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key):
-    # Initialize LangChain with OpenAI's GPT-3.5-turbo as the backend
-    llm = OpenAI(api_key=openai_api_key, model="gpt-3.5-turbo")
-    
-    combined_documents = f"Business Process Document:\n{business_process_doc}\n\n"
-    for name, doc in detailed_steps_docs.items():
-        combined_documents += f"{name}:\n{doc}\n\n"
-    
-    # Create a PromptTemplate instance
-    prompt_template = PromptTemplate(combined_documents, template="Generate test cases using the following documents:\n\n{combined_documents}")
-    
-    # Create a chain to generate the response using GPT-3.5-turbo
-    chain = SimpleSequentialChain(llm=llm, prompt_template=prompt_template)
-    
-    # Generate the test cases
-    response = chain.run()
-    
-    # Display the response
-    st.write(response)
+You are a playwright. Given the title of play, write a synopsis for that title.
+Your style is witty, humorous, light-hearted. All your plays are written using
+concise language, to the point, and are brief.
 
-def main():
-    st.title("Test Case Generator for Business Processes")
-    with st.sidebar:
-        openai_api_key = st.text_input("OpenAI API Key", key="openai_api_key", type="password")
-        "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-    business_process_doc = upload_document("Upload your business process document", ['txt', 'pdf', 'docx'])
-    detailed_steps_docs = {}
-    if business_process_doc:
-        num_detailed_docs = st.number_input("Number of detailed steps documents", min_value=1, value=1, step=1)
-        for i in range(num_detailed_docs):
-            detailed_doc = upload_document(f"Upload detailed steps document {i+1}", ['txt', 'pdf', 'docx'])
-            if detailed_doc:
-                detailed_steps_docs[f"Detailed Steps Document {i+1}"] = detailed_doc
-    if st.button("Generate Test Cases") and business_process_doc and detailed_steps_docs and openai_api_key:
-        generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_key)
+Title: {title}
 
-if __name__ == "__main__":
-    main()
+Playwright: This is a synopsis for the above play:
+
+"""
+
+playwright_prompt_template = PromptTemplate(input_variables=["title"], template=playwright_template)
+
+synopsis_chain = LLMChain(llm=playwright_llm, prompt=playwright_prompt_template)
+
+# This is an LLMChain to write a review of a play given a synopsis.
+critic_llm = OpenAI(temperature=.5, openai_api_key = "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")
+
+synopsis_template = """
+
+You are a play critic from the New York Times.
+
+Given the synopsis of play, it is your job to write a review for that play.
+You're the Simon Cowell of play critics and always deliver glowing reviews.
+
+Play Synopsis: {synopsis}
+
+Review from a New York Times play critic of the above play:"""
+
+critic_prompt_template = PromptTemplate(input_variables=["synopsis"], template=synopsis_template)
+
+review_chain = LLMChain(llm=critic_llm, prompt=critic_prompt_template)
+
+# This is the overall chain where we run these two chains in sequence.
+
+overall_chain = SimpleSequentialChain(chains= [synopsis_chain, review_chain],
+                                      verbose=True)
+
+
+play_title = "Abigail Aryan and the Motley Crew of Multi-Agent Systems"
+
+review = overall_chain.run(play_title)
