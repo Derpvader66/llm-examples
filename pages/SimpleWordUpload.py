@@ -68,7 +68,7 @@ def generate_test_cases():
 
    #query = f"Generate a list of 20 test cases based on business process and user documentation. DO NOT INCLUDE THE EXAMPLE FORMAT IN THE OUTPUT Follow the format:\n{example_test_case}"
 
-   query = f"Generate a list of 20 test cases based on business process and user documentation. DO NOT INCLUDE THE EXAMPLE FORMAT IN THE OUTPUT."
+   query = f"Generate a detailed test case based on business process and user documentation. DO NOT INCLUDE THE EXAMPLE FORMAT IN THE OUTPUT."
    test_cases = chain.run(input_documents=db.similarity_search(query), question=query)
    st.header("Generated Test Cases")
    st.write(test_cases)
