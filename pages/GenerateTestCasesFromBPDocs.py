@@ -26,16 +26,10 @@ def generate_test_cases(business_process_doc, detailed_steps_docs, openai_api_ke
     for name, doc in detailed_steps_docs.items():
         combined_documents += f"{name}:\n{doc}\n\n"
     
-    prompt_template = PromptTemplate(combined_documents,template="Generate test cases using the following documents:\n\n{combined_documents}")
-    response = llm(prompt_template)
+    prompt = "Why are there so many songs about rainbows?" 
+    #PromptTemplate(combined_documents,template="Generate test cases using the following documents:\n\n{combined_documents}")
+    response = llm(prompt)
     st.write(response)
-    # Create a chain to generate the response using GPT-3.5-turbo
-    # chain = SinglePromptChain(llm=llm, prompt=prompt, max_tokens=1024, temperature=0.7)
-    
-    # Generate the test cases
-    #test_cases = chain.run()
-    
-    #return test_cases.strip()
  
 def main():
    st.title("Test Case Generator for Business Processes")
